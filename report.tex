@@ -1,0 +1,118 @@
+
+\documentclass[11pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{lmodern} % for a nice font
+\usepackage{graphicx}
+
+\title{\textbf{Short Report on Caesar Cipher Frequency Analysis}}
+\author{Traian Sfarghiu}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+I implemented a program to encrypt and decrypt text using the \textbf{Caesar cipher} and to 
+\textbf{automatically break} the cipher using \textbf{frequency analysis}. The system tests all possible shifts 
+(0--25), then computes how closely the resulting decrypted text's letter distribution matches \textbf{standard English frequencies} 
+using three distance metrics:
+\begin{itemize}
+\item \textbf{Chi-Squared ($\chi^2$) Distance}
+\item \textbf{Cosine Distance}
+\item \textbf{Euclidean Distance}
+\end{itemize}
+Below, i present the \textbf{testing procedure}, \textbf{results}, and \textbf{conclusions}.
+
+\section{Testing Procedure}
+\begin{enumerate}
+\item \textbf{Text Length Variations}
+  \begin{itemize}
+  \item \emph{Short Texts (10--20 characters)}: Simple sentences or phrases, sometimes lacking a variety of letters.
+  \item \emph{Long Texts (200+ characters)}: Paragraphs from articles or classic literature, with richer letter distribution.
+  \end{itemize}
+\item \textbf{Random Shifts}
+  \begin{itemize}
+  \item Applied shifts like 5, 13, 19, or 23 to create encrypted versions of the original English texts.
+  \item Attempted to decrypt them using each of the three distance metrics, noting whether the correct shift was recovered.
+  \end{itemize}
+\item \textbf{Special Text Structures}
+  \begin{itemize}
+  \item \emph{Highly Repetitive Text}: e.g., repeated words/letters (``AAAAAA BBBBBB\dots'').
+  \item \emph{Unusual Letter Frequencies}: texts with very few occurrences of common letters like `E' or `T'.
+  \end{itemize}
+\item \textbf{Measurement of Success}
+  \begin{itemize}
+  \item For each test, we recorded which metric found the \textbf{correct} shift.
+  \item We noted \textbf{incorrect} guesses and possible reasons (very short length, unusual distribution, etc.).
+  \end{itemize}
+\end{enumerate}
+
+\section{Results \& Observations}
+
+\subsection{Short Texts (10--20 characters)}
+\begin{itemize}
+\item \emph{Chi-Squared}: Often correct, but sometimes off by 1--2 shift values when text lacked enough variety.
+\item \emph{Cosine}: Performed reasonably but occasionally tied with an incorrect shift due to insufficient data.
+\item \emph{Euclidean}: Similar to Chi-Squared, but also struggled with extremely short texts.
+\end{itemize}
+For \emph{very short} strings, all three methods can fail if the text is not representative of typical English frequencies.
+
+\subsection{Long Texts (200+ characters)}
+\begin{itemize}
+\item \emph{Chi-Squared}: Most consistently found the correct shift because longer texts closely match expected English letter frequencies.
+\item \emph{Cosine}: Typically correct, sometimes second-best candidate.
+\item \emph{Euclidean}: Often matched Chi-Squared's success; minor deviations appeared in unusual distributions.
+\end{itemize}
+Overall, for \emph{normal-length} English texts, all methods succeeded more often, with Chi-Squared slightly in the lead.
+
+\subsection{Edge Cases \& Anomalies}
+\begin{itemize}
+\item \textbf{High Repetition / Limited Variety}: All methods struggled if a text repeated only a few letters; the distribution did not match typical English.
+\item \textbf{Missing Common Letters}: If a text barely used `E' or `T', analysis was less reliable. Chi-Squared still often did best, but sometimes over-penalized missing letters.
+\item \textbf{Very Short Text} ($<$10 characters): All metrics can fail entirely because the sample is not representative enough.
+\end{itemize}
+
+\section{Conclusions}
+\textbf{Text length} and \textbf{distribution} are key for successful Caesar cipher breaking via frequency analysis.
+\begin{itemize}
+\item \emph{Chi-Squared} is typically most reliable for standard English.
+\item \emph{Euclidean} also performs well for normal texts, often matching Chi-Squared.
+\item \emph{Cosine} is reasonably effective, but slightly more prone to ties or confusion with peculiar distributions.
+\end{itemize}
+With longer texts, all three distance metrics almost always correctly identify the shift. For very short or unusual texts, all can fail.
+
+\section{Example Table of Results}
+\begin{center}
+\begin{tabular}{|l|c|c|c|c|}
+\hline
+\textbf{Text \& Shift} & \textbf{Length} & \textbf{Chi-Squared} & \textbf{Cosine} & \textbf{Euclidean} \\
+\hline
+\texttt{HELLO WORLD (Shift 5)} & 11 chars 
+  & Correct (5) 
+  & 2nd best guess 
+  & Off by 1 
+  \\
+\hline
+\texttt{Paragraph (Shift 13)} & 300+ chars 
+  & Correct (13) 
+  & Correct (13) 
+  & Correct (13) 
+  \\
+\hline
+\texttt{AAAA BBBB CCCC (3)} & 14 chars 
+  & Correct (3) 
+  & Incorrect (8) 
+  & Correct (3) 
+  \\
+\hline
+\end{tabular}
+\end{center}
+
+\section{Final Thoughts}
+This project demonstrates how \textbf{classical ciphers} like Caesar can be broken with simple frequency analysis. 
+While modern ciphers are far more secure, this assignment highlights the \emph{importance of distribution} in determining a shift. 
+Future explorations might involve other substitution ciphers or analyzing how text domain (e.g., scientific vs. casual) affects frequency distributions.
+
+\end{document}
